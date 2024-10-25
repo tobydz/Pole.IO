@@ -1,0 +1,145 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2761
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 HelveticaNeue-Bold;\f1\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{hyphen\}}{\leveltext\leveltemplateid1\'01\uc0\u8259 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat7\levelspace360\levelindent0{\*\levelmarker \{decimal\}.}{\leveltext\leveltemplateid101\'02\'00.;}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listname ;}\listid2}
+{\list\listtemplateid3\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{hyphen\}}{\leveltext\leveltemplateid201\'01\uc0\u8259 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid3}
+{\list\listtemplateid4\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{hyphen\}}{\leveltext\leveltemplateid301\'01\uc0\u8259 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid4}
+{\list\listtemplateid5\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{hyphen\}}{\leveltext\leveltemplateid401\'01\uc0\u8259 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid5}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}{\listoverride\listid3\listoverridecount0\ls3}{\listoverride\listid4\listoverridecount0\ls4}{\listoverride\listid5\listoverridecount0\ls5}}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab560
+\pard\pardeftab560\partightenfactor0
+
+\f0\b\fs40 \cf0 Utility Pole Inspection Imaging Program\
+\pard\pardeftab560\slleading20\pardirnatural\partightenfactor0
+
+\f1\b0\fs26 \cf0 \
+\pard\pardeftab560\slleading20\partightenfactor0
+\cf0 I need to design and develop a small, easy to use program that will assist my team in validating a large set of images prior to being uploaded to a 3D modeling (Gaussian splat) program.  These are images taken by a DJI Mavic 3 Enterprise of utility poles.  The image sets are supposed to be in the following order: \
+1. Top-down Nadir (gimbal angle is between -89 and -90 degrees)\
+2. 360 degree orbit shots taken at .7 second intervals (images from the wide camera with a gimbal angle between -65 and -40 degrees)\
+3. A zoomed in shot of the utility pole\'92s ID tag. (Taken with the Zoom Camera following an orbit sequence)\
+\
+\pard\pardeftab560\slleading20\partightenfactor0
+\cf0 \ul \ulc0 How the modeler works:\ulnone \
+The modeler uses the  DJI EXIF metadata to determine what shot is the Nadir and which is the zoomed.  When a Nadir shot is identified, it signifies the start of a \'93Pole Image Sequence\'94, followed by a minimum of 35 orbiting shots. The final zoomed in shot signifies the end of pole sequence and to move on to the next image in the set, and if identified as a nadir shot, repeats the process.  \
+\
+The general program flow will include: \
+1. Take a path to a directory in the UI\
+2. Check for images in the target directory\
+3. Iterate over any subdirectories (if none just take the images in the working directory) and get a total image count (of type .jpg or .jpeg - case independent) \'97 It will then use the total image count as the upper-bounds of the progress pie bar\
+4. Load in the images from that subdirectory (TODO: change to load in just the filename and required metadata into some kind of data structure to save on memory) \
+5. Like the modeler, it will evaluate and collect pole sets based on the metadata, then move the images into the target directory as a full single pole image sequence, and increment a \'94Pole Count\'94 in an LCD style display in the UI\
+6. If there is an irregularity in the sequence, the program will log it accordingly.  Irregular scenarios would fall into these categories:\
+\pard\pardeftab560\pardirnatural\partightenfactor0
+\ls1\ilvl0
+\fs24 \cf0 {\listtext	\uc0\u8259 	}
+\fs26 Missing the Nadir shots at the start of a sequence [Determined by the metadata gimbal angle more than -80 degrees up to -90 degrees]\
+\ls1\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 Missing the zoomed in shot at the end of the sequence [Determined by the image source ZoomCamera] followed by a NADIR\
+\ls1\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 Multiple Nadir shots  back to back\
+\ls1\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 Multiple zoomed shots back to back\
+\pard\pardeftab560\pardirnatural\partightenfactor0
+\ls2\ilvl0\cf0 {\listtext	0.	}The program will then determine which \'93pole set\'94 this belongs to by the date and time stamp that\'92s formatted in the file name (or it can just order the images by name and process them in order)\
+{\listtext	0.	}If it runs into a \'93failure scenario\'94, it will note the log file with the error category, the name of the first image in the sequence and the name of the file before the next NADIR (start of next sequence) and increment a counter for that type of failure. Since those files are not a part of a completed image sequence, they are left behind in the folder or subfolder\
+\pard\pardeftab560\slleading20\pardirnatural\partightenfactor0
+\cf0 \
+\pard\pardeftab560\slleading20\partightenfactor0
+\cf0 Here is the DJI guide to the EXIF data:\
+\pard\pardeftab560\slleading20\pardirnatural\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://dl.djicdn.com/downloads/DJI_Mavic_3_Enterprise/20230829/Mavic_3M_Image_Processing_Guide_EN.pdf#:~:text=Mavic%203M%20Image%20Processing%20Guide.%20v1.0%202023.08.%20I."}}{\fldrslt \cf0 \
+https://dl.djicdn.com/downloads/DJI_Mavic_3_Enterprise/20230829/Mavic_3M_Image_Processing_Guide_EN.pdf#:~:text=Mavic%203M%20Image%20Processing%20Guide.%20v1.0%202023.08.%20I.}}\
+\
+\
+\pard\pardeftab560\slleading20\partightenfactor0
+\cf0 \ul Detailed Program Flow:\
+\
+\ulnone Data Structures:\
+	ImageData\
+		- Filename (string)\
+		- GimbalAngle (float)\
+		- ImageSource (string)\
+		- v2: TimeStamp (string)\
+		- isDuplicate (bool)\
+		- ShotType (string) [NADIR | ORBIT | ZOOM]\
+		- v2: GPSLocation\
+		- v2: DroneHeading (int)\
+		- v2: GPSAltitude\
+\pard\pardeftab560\slleading20\pardirnatural\partightenfactor0
+\cf0 \
+\pard\pardeftab560\slleading20\partightenfactor0
+\cf0 Flow: \
+\pard\pardeftab560\pardirnatural\partightenfactor0
+\ls3\ilvl0
+\fs24 \cf0 {\listtext	\uc0\u8259 	}
+\fs26 The user provides the Top-level directory of the images and the name of the output folder in the UI and clicks \'93Verify Images\'94\
+\ls3\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 Create the output folder on the same level as the top-level directory if it doesn\'92t already exist\
+\ls3\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 Iterate the subdirectories and get a total image count (for use as the upper-bounds of the progress pie bar)\
+\ls3\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 Go into the first subdirectory\
+\ls3\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 Instantiate an ImageData data structure\
+\ls3\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 Extract the DJI EXIF / XMP metadata required for the ImageData structure for each image\
+\ls3\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 Once all the images in the subfolder have been processed, use the data structure collection of image data to identify complete image sequences, incomplete sequences, and duplicates\
+\ls3\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 Move the complete image sequences over to the destination folder, and increment the Pole Count (lcd on the UI)\
+\ls3\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 Go to the next subfolder and repeat\
+\ls3\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 Once all image sequences are identified and moved to the output folder, log the occurrences of broken pole sequences (either missing NADIR or Zoom), number of unknown images that don\'92t fit into a sequence (between a zoom and NADIR shot)\
+\ls3\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 TODO: determine when to update the progress pie bar\
+\pard\pardeftab560\slleading20\partightenfactor0
+\cf0 \
+Edge Case Scenarios:\
+\pard\pardeftab560\pardirnatural\partightenfactor0
+\ls4\ilvl0
+\fs24 \cf0 {\listtext	\uc0\u8259 	}
+\fs26 Multiple NADIR or Zoom Shots: Frequently the M3E will continue to fire the camera even though the shutter button is depressed twice (in timed shot mode) resulting in multiple NADIR and Zoom shots.  In this case, use the first image of the duplicates and do not include the repeats in the valid pole sequence to avoid being copied into the destination folder\
+\ls4\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 Less than 35 orbit shots: Log the occurrence of <35 orbit images, but doesn\'92t affect the validity of the sequence\
+\ls4\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 RTK / GPS logs: those will be in the image folders, but the program should ignore them completely\
+\ls4\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 Missing NADIR: Can be determined by only orbit shots followed by a zoom shot.  If not in the very first sequence of images, this can be identified by a zoom shot followed by orbit shots. In v2, we will use GPS coordinates to generate a location pin the pilot can fly back to to capture.\
+\ls4\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 Missing Zoom: Identifiable by a NADIR and orbit shots followed by another NADIR shot.\
+\ls4\ilvl0
+\fs24 {\listtext	\uc0\u8259 	}
+\fs26 Random Images: Rare case where random photos that don\'92t belong to a pole sequence exist in the image directory.  This would happen between valid pole sequences (a zoom shot followed by a non-NADIR shot(s))\
+\pard\pardeftab560\slleading20\partightenfactor0
+\cf0 \
+\
+\
+\
+\
+\pard\pardeftab560\pardirnatural\partightenfactor0
+\ls5\ilvl0
+\fs24 \cf0 {\listtext	\uc0\u8259 	}
+\fs26 \
+}
